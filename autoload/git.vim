@@ -2,7 +2,7 @@
 " FILE: git.vim
 " AUTHOR: motemen <motemen@gmail.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 17 Jan 2011.
+" Last Modified: 23 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -187,10 +187,10 @@ function! git#commit(args)"{{{
 
   " Create COMMIT_EDITMSG file
   call s:edit_git_buffer(l:git_dir.'/COMMIT_EDITMSG')
-  
+
   setlocal filetype=gitcommit bufhidden=wipe
   let b:git_commit_args = l:args
-  
+
   augroup GitCommit
     autocmd!
     autocmd BufWritePre  <buffer> silent g/^\s*#/d | setlocal fileencoding=utf-8
@@ -215,20 +215,20 @@ function! git#push(args)"{{{
   if l:args =~ '^\s*$'
     let l:args = 'origin ' . git#branch()
   endif
-  
-  echo s:system(join(insert(l:args, 'push')))
+
+  echo s:system('push' . l:args)
 endfunction"}}}
 
 " Pull.
 function! git#pull(args)"{{{
   "   call git#do_command('pull ' . a:args)
   " Wanna see progress...
-  echo s:system(join(insert(a:args, 'pull')))
+  echo s:system('pull' . a:args)
 endfunction"}}}
 
 " Fixup.
 function! git#fixup(args)"{{{
-  echo s:system(join(insert(a:args, 'commit --amend -C HEAD --date= ')))
+  echo s:system('commit --amend -C HEAD --date= ' . a:args)
 endfunction"}}}
 
 " Show commit, tree, blobs.
@@ -358,7 +358,7 @@ function! s:open_git_buffer(content)"{{{
   let b:is_git_msg_buffer = 1
 endfunction"}}}
 function! s:edit_git_buffer(file)"{{{
-  execute g:git_command_edit a:file
+  execute g:git_command_edit '`=a:file`'
 
   % delete _
   execute 'setlocal bufhidden=' . g:git_bufhidden
