@@ -2,7 +2,7 @@
 " FILE: git.vim
 " AUTHOR: motemen <motemen@gmail.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 17 Jan 2011.
+" Last Modified: 04 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -361,6 +361,7 @@ function! s:edit_git_buffer(file)"{{{
   execute g:git_command_edit a:file
 
   % delete _
+  setlocal buftype=nofile modifiable
   execute 'setlocal bufhidden=' . g:git_bufhidden
 
   setlocal nomodified
