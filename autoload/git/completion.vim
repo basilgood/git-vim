@@ -36,8 +36,11 @@ endfunction"}}}
 function! git#completion#git(args)"{{{
   return ['add', 'bisect', 'branch', 'checkout', 'clone', 'commit', 'diff', 'fetch',
         \'grep', 'init', 'log', 'merge', 'mv', 'pull', 'push', 'rebase', 'reset', 'rm',
-        \'show', 'status', 'tag', 'clean']
+        \'show', 'status', 'tag', 'clean'] + s:hub_commands()
 endfunction"}}}
+function! s:hub_commands()
+  return !executable('hub') ? [] : ['fork', 'pull-request', 'browse']
+endfunction
 
 function! git#completion#add(args)"{{{
   return [0, ['-n', '-v', '--force', '-f', '--interactive', '-i', '--patch', '-p', '--edit', '-e', '--no-all', '--all', '--no-ignore-removal', '--ignore_removal', '--update', '-u', '--intent-to-add', '-N', '--refresh', '--ignore-errors', '--ignore-missing', '--'] + s:get_files()]
@@ -110,6 +113,9 @@ function! git#completion#var(args)"{{{
 endfunction"}}}
 function! git#completion#clean(args)"{{{
   return [0, ['-d', '--force', '-f', '-i', '--interactive', '-n', '--dry-run', '-q', '--quit', '-x', '-X', '-e', '--exclude=']]
+endfunction"}}}
+function! git#completion#pull_request(args)"{{{
+  return [0, ['-m', '-b', '--base', '-h', '--head', '-i', '--issue']]
 endfunction"}}}
 
 function! s:get_files()
