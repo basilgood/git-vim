@@ -25,86 +25,91 @@
 "=============================================================================
 
 function! git#completion#do_completion(args)"{{{
-  return (len(a:args) <= 2)? 
-        \git#completion#git(a:args) : 
-        \call('git#completion#' . substitute(a:args[1], '-', '_', 'g'), [a:args])
+  if len(a:args) <= 2
+    return [0, git#completion#git(a:args)]
+  else
+    return call('git#completion#' . substitute(a:args[1], '-', '_', 'g'), [a:args])
+  endif
 endfunction"}}}
 
 " List all git commands.
 function! git#completion#git(args)"{{{
   return ['add', 'bisect', 'branch', 'checkout', 'clone', 'commit', 'diff', 'fetch',
-        \'grep', 'init', 'log', 'merge', 'mv', 'pull', 'push', 'rebase', 'reset', 'rm', 
-        \'show', 'status', 'tag']
+        \'grep', 'init', 'log', 'merge', 'mv', 'pull', 'push', 'rebase', 'reset', 'rm',
+        \'show', 'status', 'tag', 'clean']
 endfunction"}}}
 
 function! git#completion#add(args)"{{{
-  return ["-u", "-p", "-A"] + s:get_files()
+  return [0, ['-n', '-v', '--force', '-f', '--interactive', '-i', '--patch', '-p', '--edit', '-e', '--no-all', '--all', '--no-ignore-removal', '--ignore_removal', '--update', '-u', '--intent-to-add', '-N', '--refresh', '--ignore-errors', '--ignore-missing', '--'] + s:get_files()]
 endfunction"}}}
 function! git#completion#blame(args)"{{{
-  return []
+  return [0]
 endfunction"}}}
 function! git#completion#branch(args)"{{{
-  return ['-r']
+  return [1, ['-r']]
 endfunction"}}}
 function! git#completion#checkout(args)"{{{
-  return []
+  return [1, []]
 endfunction"}}}
 function! git#completion#clone(args)"{{{
-  return []
+  return [0, []]
 endfunction"}}}
 function! git#completion#config(args)"{{{
-  return ['--config']
+  return [0, ['--config']]
 endfunction"}}}
 function! git#completion#commit(args)"{{{
-  return ['-m', 'a', '-v', '--amend']
+  return [0, ['-m', 'a', '-v', '--amend']]
 endfunction"}}}
 function! git#completion#describe(args)"{{{
-  return ['--contains']
+  return [1, ['--contains']]
 endfunction"}}}
 function! git#completion#diff(args)"{{{
-  return ['--cached']
+  return [1, ['--cached']]
 endfunction"}}}
 function! git#completion#init(args)"{{{
-  return ['--bare', '--shared']
+  return [0, ['--bare', '--shared']]
 endfunction"}}}
 function! git#completion#log(args)"{{{
-  return ['-p', '--pretty=short', '--grep=', '--left-right']
+  return [1, ['-p', '--pretty=short', '--grep=', '--left-right']]
 endfunction"}}}
 function! git#completion#merge(args)"{{{
-  return []
+  return [1, []]
 endfunction"}}}
 function! git#completion#push(args)"{{{
-  return []
+  return [1, []]
 endfunction"}}}
 function! git#completion#pull(args)"{{{
-  return []
+  return [1, []]
 endfunction"}}}
 function! git#completion#reset(args)"{{{
-  return ['--hard']
+  return [1, ['--hard', '--soft']]
 endfunction"}}}
 function! git#completion#rebase(args)"{{{
-  return ['-i', '--continue']
+  return [1, ['-i', '--continue', '--abort', '--skip']]
 endfunction"}}}
 function! git#completion#revert(args)"{{{
-  return []
+  return [1, []]
 endfunction"}}}
 function! git#completion#rev_parse(args)"{{{
-  return []
+  return [1, []]
 endfunction"}}}
 function! git#completion#show(args)"{{{
-  return []
+  return [1, []]
 endfunction"}}}
 function! git#completion#status(args)"{{{
-  return []
+  return [1, []]
 endfunction"}}}
 function! git#completion#stash(args)"{{{
-  return ['pop']
+  return [0, ['pop', 'apply', 'branch', 'clear', 'create', 'drop', 'list', 'save', 'show']]
 endfunction"}}}
 function! git#completion#tag(args)"{{{
-  return ['-a', '-l', '-n', '-d']
+  return [1, ['-a', '-l', '-n', '-d']]
 endfunction"}}}
 function! git#completion#var(args)"{{{
-  return []
+  return [0, []]
+endfunction"}}}
+function! git#completion#clean(args)"{{{
+  return [0, ['-d', '--force', '-f', '-i', '--interactive', '-n', '--dry-run', '-q', '--quit', '-x', '-X', '-e', '--exclude=']]
 endfunction"}}}
 
 function! s:get_files()

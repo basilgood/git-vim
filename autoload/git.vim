@@ -94,7 +94,13 @@ endfunction"}}}
 function! git#list_commands(arg_lead, cmd_line, cursor_pos)"{{{
   let l:args = split(a:cmd_line, '\s', 1)
   let l:pattern = printf('v:val =~ "^%s"', escape(l:args[-1], '~" \.^$[]'))
-  return filter(git#completion#do_completion(l:args), l:pattern)
+  let [commits_enabled, candidates] = git#completion#do_completion(l:args)
+
+  if commits_enabled
+    let candidates += git#list_commits(a:arg_lead, a:cmd_line, a:cursor_pos)
+  endif
+
+  return filter(candidates, l:pattern)
 endfunction"}}}
 
 " Show diff.
@@ -116,7 +122,7 @@ function! git#vimdiff(args)"{{{
     echo 'No output from git command'
     return
   endif
-  
+
   let l:filetype_save = &filetype
 
   diffthis
@@ -125,9 +131,9 @@ function! git#vimdiff(args)"{{{
   let g:git_command_edit = 'vnew'
   call s:open_git_buffer(l:git_output)
   let g:git_command_edit = l:git_command_edit_save
-  
+
   let &filetype = l:filetype_save
-  
+
   diffthis
 endfunction"}}}
 
@@ -287,7 +293,7 @@ function! s:system(args)"{{{
     let l:command = iconv(l:command, &encoding, &termencoding)
   endif
   let l:output = g:git_use_vimproc ? vimproc#system(l:command) : system(l:command)
-  
+
   if &termencoding != '' && &termencoding != &encoding
     let l:output = iconv(l:output, &termencoding, &encoding)
   endif
