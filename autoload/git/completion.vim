@@ -117,6 +117,9 @@ endfunction"}}}
 function! git#completion#pull_request(args)"{{{
   return [0, ['-m', '-b', '--base', '-h', '--head', '-i', '--issue']]
 endfunction"}}}
+function! git#completion#clean(args)"{{{
+  return ['-f', '-d']
+endfunction"}}}
 
 function! s:get_files()
   return split(glob('*'), '\n')
