@@ -119,7 +119,7 @@ endfunction  "}}}
 " Show vimdiff.
 function! git#vimdiff(args) abort  "{{{
   let l:git_output = s:system('cat-file -p ' . a:args . ':' . s:get_repository_path(s:expand('%')))
-  if l:git_output == ''
+  if l:git_output ==# ''
     echo 'No output from git command'
     return
   endif
@@ -136,18 +136,26 @@ function! git#vimdiff(args) abort  "{{{
   let &filetype = l:filetype_save
 
   diffthis
+  call feedkeys("\<C-w>\<c-w>", 'n')
 endfunction  "}}}
 
 " Show Status.
 function! git#status() abort  "{{{
   let l:git_output = s:system('status')
   call s:open_git_buffer(l:git_output)
-  setlocal filetype=git-status
-  exe 'nnoremap <silent><buffer> <cr> :<C-u>call <SID>add_cursor_file()<cr>'
-  exe 'nnoremap <silent><buffer> -    :<C-u>call <SID>reset_cursor_file()<cr>'
-  exe 'nnoremap <silent><buffer> x    :<C-u>call <SID>discard_cursor_file()<cr>'
-  exe 'nnoremap <silent><buffer> !    :<C-u>call <SID>clean_cursor_file()<cr>'
-  exe 'nnoremap <silent><buffer> q    :bd!<cr>'
+  execute 'setlocal filetype=git-status'
+  execute 'nnoremap <silent><buffer> <cr> :<C-u>call <SID>add_cursor_file()<cr>'
+  execute 'nnoremap <silent><buffer> o    :<C-u>call <SID>open_cursor_file()<cr>'
+  execute 'nnoremap <silent><buffer> -    :<C-u>call <SID>reset_cursor_file()<cr>'
+  execute 'nnoremap <silent><buffer> x    :<C-u>call <SID>discard_cursor_file()<cr>'
+  execute 'nnoremap <silent><buffer> !    :<C-u>call <SID>clean_cursor_file()<cr>'
+  execute 'nnoremap <silent><buffer> q    :bd!<cr>'
+endfunction  "}}}
+
+function! s:open_cursor_file() abort  "{{{
+  let l:cursorfile = split(getline('.'))
+  let l:openfile = get(l:cursorfile, -1)
+  execute 'edit ' . expand(l:openfile)
 endfunction  "}}}
 
 function! s:add_cursor_file() abort  "{{{
@@ -242,14 +250,8 @@ endfunction  "}}}
 
 " Push.
 function! git#push(args) abort  "{{{
-  "   call git#do_command('push ' . a:args)
-  " Wanna see progress...
-  let l:args = a:args
-  if l:args =~# '^\s*$'
-    let l:args = 'origin ' . git#branch()
-  endif
-
-  echo s:system('push' . l:args)
+  call git#do_command('push ' . a:args)
+  call s:refresh_git_status()
 endfunction  "}}}
 
 " Pull.
@@ -390,6 +392,7 @@ function! s:open_git_buffer(content) abort  "{{{
 
   let b:is_git_msg_buffer = 1
 endfunction  "}}}
+
 function! s:edit_git_buffer(file) abort  "{{{
   execute g:git_command_edit '`=a:file`'
 
