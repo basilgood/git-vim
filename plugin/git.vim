@@ -79,8 +79,8 @@ elseif exists('g:loaded_git_vim')
     finish
 endif
 
-let s:save_cpo = &cpo
-set cpo&vim
+let s:save_cpo = &cpoptions
+set cpoptions&vim
 
 if !exists('g:git_command_edit')
   let g:git_command_edit = 'new'
@@ -136,7 +136,7 @@ command!          GitPullRebase       call git#pull('--rebase')
 command! -nargs=* GitPush             call git#push(<q-args>)
 command! -nargs=* GitFixup            call git#fixup(<q-args>)
 
-let &cpo = s:save_cpo
+let &cpoptions = s:save_cpo
 unlet s:save_cpo
 
 let g:loaded_git_vim = 1
