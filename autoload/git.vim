@@ -113,6 +113,7 @@ function! git#diff(args) abort  "{{{
 
   call s:open_git_buffer(l:git_output)
   setlocal filetype=git-diff
+  exe 'nnoremap <silent><buffer> q    :bd!<cr>'
 endfunction  "}}}
 
 " Show vimdiff.
@@ -142,10 +143,11 @@ function! git#status() abort  "{{{
   let l:git_output = s:system('status')
   call s:open_git_buffer(l:git_output)
   setlocal filetype=git-status
-  nnoremap <silent><buffer> <Enter> :<C-u>call <SID>add_cursor_file()<Enter>
-  nnoremap <silent><buffer> -       :<C-u>call <SID>reset_cursor_file()<Enter>
-  nnoremap <silent><buffer> x       :<C-u>call <SID>discard_cursor_file()<Enter>
-  nnoremap <silent><buffer> !       :<C-u>call <SID>clean_cursor_file()<Enter>
+  exe 'nnoremap <silent><buffer> <cr> :<C-u>call <SID>add_cursor_file()<cr>'
+  exe 'nnoremap <silent><buffer> -    :<C-u>call <SID>reset_cursor_file()<cr>'
+  exe 'nnoremap <silent><buffer> x    :<C-u>call <SID>discard_cursor_file()<cr>'
+  exe 'nnoremap <silent><buffer> !    :<C-u>call <SID>clean_cursor_file()<cr>'
+  exe 'nnoremap <silent><buffer> q    :bd!<cr>'
 endfunction  "}}}
 
 function! s:add_cursor_file() abort  "{{{
@@ -176,6 +178,9 @@ function! s:refresh_git_status() abort  "{{{
   let l:pos_save = getpos('.')
   call git#status()
   call setpos('.', l:pos_save)
+  if exists('g:loaded_gitgutter')
+    call gitgutter#all(1)
+  endif
 endfunction  "}}}
 
 " Show Log.
