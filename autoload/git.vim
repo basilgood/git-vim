@@ -138,7 +138,7 @@ function! git#vimdiff(args)"{{{
 endfunction"}}}
 
 " Show Status.
-function! git#status()"{{{
+function! git#status() abort"{{{
   let l:git_output = s:system('status')
   call s:open_git_buffer(l:git_output)
   setlocal filetype=git-status
@@ -146,19 +146,27 @@ function! git#status()"{{{
   nnoremap <silent><buffer> -       :<C-u>call <SID>remove_cursor_file()<Enter>
 endfunction"}}}
 
-function! s:add_cursor_file()"{{{
-  if getline('.') =~# '^#\tdeleted:'
-    call git#rm(s:expand('<cfile>'))
+function! s:add_cursor_file() abort"{{{
+  let l:addfile = split(getline('.'))
+  if len(l:addfile) > 1
+    call git#add(get(l:addfile, -1))
   else
-    call git#add(s:expand('<cfile>'))
+    call git#add(get(l:addfile, 0))
   endif
   call s:refresh_git_status()
 endfunction"}}}
-function! s:remove_cursor_file()"{{{
-  call s:system('reset HEAD -- ' . s:expand('<cfile>'))
+
+function! s:remove_cursor_file() abort"{{{
+  let l:resetfile = split(getline('.'))
+  if len(l:resetfile) > 2
+    call s:system('reset HEAD -- ' . get(l:resetfile, -1))
+  else
+    call s:system('reset HEAD -- ' . get(l:resetfile, 1))
+  endif
   call s:refresh_git_status()
 endfunction"}}}
-function! s:refresh_git_status()"{{{
+
+function! s:refresh_git_status() abort"{{{
   let l:pos_save = getpos('.')
   call git#status()
   call setpos('.', l:pos_save)
