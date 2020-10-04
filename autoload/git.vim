@@ -27,25 +27,25 @@
 "=============================================================================
 
 " Ensure b:git_dir exists.
-function! s:get_git_dir() abort"{{{
+function! s:get_git_dir() abort  "{{{
   let l:git_dir = finddir('.git', ';')
   if l:git_dir !=# ''
     let l:git_dir = fnamemodify(l:git_dir, ':p:h')
   endif
 
   return l:git_dir
-endfunction"}}}
+endfunction  "}}}
 
 " Get repository relative path.
-function! s:get_repository_path(fname) abort"{{{
+function! s:get_repository_path(fname) abort  "{{{
   let l:git_repository = fnamemodify(s:get_git_dir(), ':h')
   let l:fpath = fnamemodify(a:fname, ':p')
   return l:fpath[strlen(l:git_repository)+1 :]
-endfunction"}}}
+endfunction  "}}}
 
 " Returns current git branch.
 " Call inside 'statusline' or 'titlestring'.
-function! git#get_current_branch() abort"{{{
+function! git#get_current_branch() abort  "{{{
   let l:git_dir = s:get_git_dir()
 
   if l:git_dir !=# '' && filereadable(l:git_dir . '/HEAD')
@@ -58,20 +58,20 @@ function! git#get_current_branch() abort"{{{
   else
     return ''
   endif
-endfunction"}}}
+endfunction  "}}}
 
 " List all git local branches.
-function! git#list_branches(arg_lead, cmd_line, cursor_pos) abort"{{{
+function! git#list_branches(arg_lead, cmd_line, cursor_pos) abort  "{{{
   let l:branches = split(s:system('branch'), '\n')
   if s:get_error_status()
     return []
   endif
 
   return map(l:branches, 'matchstr(v:val, ''^[* ] \zs.*'')')
-endfunction"}}}
+endfunction  "}}}
 
 " List all git commits.
-function! git#list_commits(arg_lead, cmd_line, cursor_pos) abort"{{{
+function! git#list_commits(arg_lead, cmd_line, cursor_pos) abort  "{{{
   let l:commits = split(s:system('log --pretty=format:%h'))
   if s:get_error_status()
     return []
@@ -88,10 +88,10 @@ function! git#list_commits(arg_lead, cmd_line, cursor_pos) abort"{{{
   endif
 
   return filter(l:commits, 'match(v:val, ''\v'' . a:arg_lead) == 0')
-endfunction"}}}
+endfunction  "}}}
 
 " List all git commands.
-function! git#list_commands(arg_lead, cmd_line, cursor_pos) abort"{{{
+function! git#list_commands(arg_lead, cmd_line, cursor_pos) abort  "{{{
   let l:args = split(a:cmd_line, '\s', 1)
   let l:pattern = printf('v:val =~ "^%s"', escape(l:args[-1], '~" \.^$[]'))
   let [commits_enabled, candidates] = git#completion#do_completion(l:args)
@@ -101,10 +101,10 @@ function! git#list_commands(arg_lead, cmd_line, cursor_pos) abort"{{{
   endif
 
   return filter(candidates, l:pattern)
-endfunction"}}}
+endfunction  "}}}
 
 " Show diff.
-function! git#diff(args) abort"{{{
+function! git#diff(args) abort  "{{{
   let l:git_output = s:system('diff ' . a:args . ' -- ' . s:expand('%'))
   if !strlen(git_output)
     echo 'No output from git command'
@@ -113,10 +113,10 @@ function! git#diff(args) abort"{{{
 
   call s:open_git_buffer(l:git_output)
   setlocal filetype=git-diff
-endfunction"}}}
+endfunction  "}}}
 
 " Show vimdiff.
-function! git#vimdiff(args) abort"{{{
+function! git#vimdiff(args) abort  "{{{
   let l:git_output = s:system('cat-file -p ' . a:args . ':' . s:get_repository_path(s:expand('%')))
   if l:git_output == ''
     echo 'No output from git command'
@@ -135,18 +135,18 @@ function! git#vimdiff(args) abort"{{{
   let &filetype = l:filetype_save
 
   diffthis
-endfunction"}}}
+endfunction  "}}}
 
 " Show Status.
-function! git#status() abort"{{{
+function! git#status() abort  "{{{
   let l:git_output = s:system('status')
   call s:open_git_buffer(l:git_output)
   setlocal filetype=git-status
   nnoremap <silent><buffer> <Enter> :<C-u>call <SID>add_cursor_file()<Enter>
   nnoremap <silent><buffer> -       :<C-u>call <SID>remove_cursor_file()<Enter>
-endfunction"}}}
+endfunction  "}}}
 
-function! s:add_cursor_file() abort"{{{
+function! s:add_cursor_file() abort  "{{{
   let l:addfile = split(getline('.'))
   if len(l:addfile) > 1
     call git#add(get(l:addfile, -1))
@@ -154,9 +154,9 @@ function! s:add_cursor_file() abort"{{{
     call git#add(get(l:addfile, 0))
   endif
   call s:refresh_git_status()
-endfunction"}}}
+endfunction  "}}}
 
-function! s:remove_cursor_file() abort"{{{
+function! s:remove_cursor_file() abort  "{{{
   let l:resetfile = split(getline('.'))
   if len(l:resetfile) > 2
     call s:system('reset HEAD -- ' . get(l:resetfile, -1))
@@ -164,44 +164,44 @@ function! s:remove_cursor_file() abort"{{{
     call s:system('reset HEAD -- ' . get(l:resetfile, 1))
   endif
   call s:refresh_git_status()
-endfunction"}}}
+endfunction  "}}}
 
-function! s:refresh_git_status() abort"{{{
+function! s:refresh_git_status() abort  "{{{
   let l:pos_save = getpos('.')
   call git#status()
   call setpos('.', l:pos_save)
-endfunction"}}}
+endfunction  "}}}
 
 " Show Log.
-function! git#log(args) abort"{{{
+function! git#log(args) abort  "{{{
   let l:git_output = s:system('log ' . a:args . ' -- ' . s:expand('%'))
   call s:open_git_buffer(l:git_output)
   setlocal filetype=git-log
-endfunction"}}}
+endfunction  "}}}
 
 " Add file to index.
-function! git#add(expr) abort"{{{
+function! git#add(expr) abort  "{{{
   let l:file = s:expand(a:expr !=# '' ? a:expr : '%')
 
   call git#do_command('add ' . l:file)
-endfunction"}}}
+endfunction  "}}}
 
 " Unstage file.
-function! git#reset(expr) abort"{{{
+function! git#reset(expr) abort  "{{{
   let l:file = s:expand(a:expr !=# '' ? a:expr : '%')
 
   call git#do_command('reset HEAD -- ' . l:file)
-endfunction"}}}
+endfunction  "}}}
 
 " Remove file from repository.
-function! git#rm(expr) abort"{{{
+function! git#rm(expr) abort  "{{{
   let l:file = s:expand(a:expr !=# '' ? a:expr : '%')
 
   call git#do_command('rm ' . l:file)
-endfunction"}}}
+endfunction  "}}}
 
 " Commit.
-function! git#commit(args) abort"{{{
+function! git#commit(args) abort  "{{{
   let l:git_dir = s:get_git_dir()
 
   let l:args = a:args
@@ -217,20 +217,20 @@ function! git#commit(args) abort"{{{
     autocmd BufWritePre  <buffer> silent g/^\s*#/d | setlocal fileencoding=utf-8
     autocmd BufWinLeave <buffer> call s:write_commit_message() | bdelete!
   augroup END
-endfunction"}}}
+endfunction  "}}}
 
-function! s:write_commit_message() abort"{{{
+function! s:write_commit_message() abort  "{{{
   call git#do_command('commit ' . b:git_commit_args . ' -F ' . expand('%'))
   autocmd! GitCommit * <buffer>
-endfunction"}}}
+endfunction  "}}}
 
 " Checkout.
-function! git#checkout(args) abort"{{{
+function! git#checkout(args) abort  "{{{
   call git#do_command('checkout ' . a:args)
-endfunction"}}}
+endfunction  "}}}
 
 " Push.
-function! git#push(args) abort"{{{
+function! git#push(args) abort  "{{{
   "   call git#do_command('push ' . a:args)
   " Wanna see progress...
   let l:args = a:args
@@ -239,22 +239,22 @@ function! git#push(args) abort"{{{
   endif
 
   echo s:system('push' . l:args)
-endfunction"}}}
+endfunction  "}}}
 
 " Pull.
-function! git#pull(args) abort"{{{
+function! git#pull(args) abort  "{{{
   "   call git#do_command('pull ' . a:args)
   " Wanna see progress...
   echo s:system('pull' . a:args)
-endfunction"}}}
+endfunction  "}}}
 
 " Fixup.
-function! git#fixup(args) abort"{{{
+function! git#fixup(args) abort  "{{{
   echo s:system('commit --amend -C HEAD --date= ' . a:args)
-endfunction"}}}
+endfunction  "}}}
 
 " Show commit, tree, blobs.
-function! git#cat_file(file) abort"{{{
+function! git#cat_file(file) abort  "{{{
   let l:git_output = s:system('cat-file -p ' . s:expand(a:file))
   if l:git_output ==# ''
     echo 'No output from git command'
@@ -262,10 +262,10 @@ function! git#cat_file(file) abort"{{{
   endif
 
   call s:open_git_buffer(l:git_output)
-endfunction"}}}
+endfunction  "}}}
 
 " Show revision and author for each line.
-function! git#blame() abort"{{{
+function! git#blame() abort  "{{{
   let l:git_output = s:system('blame -- ' . s:expand('%'))
   if l:git_output ==# ''
     echo 'No output from git command'
@@ -290,9 +290,9 @@ function! git#blame() abort"{{{
   setlocal nowrap scrollbind
 
   syncbind
-endfunction"}}}
+endfunction  "}}}
 
-function! git#do_command(args) abort"{{{
+function! git#do_command(args) abort  "{{{
   let l:git_output = substitute(s:system(a:args), '\n*$', '', '')
   if s:get_error_status()
     echohl Error
@@ -301,9 +301,9 @@ function! git#do_command(args) abort"{{{
   else
     echo l:git_output
   endif
-endfunction"}}}
+endfunction  "}}}
 
-function! s:system(args) abort"{{{
+function! s:system(args) abort  "{{{
   let l:command = g:git_bin . ' ' . a:args
   if &termencoding !=# '' && &termencoding != &encoding
     let l:command = iconv(l:command, &encoding, &termencoding)
@@ -314,13 +314,13 @@ function! s:system(args) abort"{{{
     let l:output = iconv(l:output, &termencoding, &encoding)
   endif
   return l:output
-endfunction"}}}
-function! s:get_error_status() abort"{{{
+endfunction  "}}}
+function! s:get_error_status() abort  "{{{
   return g:git_use_vimproc ? vimproc#get_last_status() : v:shell_error
-endfunction"}}}
+endfunction  "}}}
 
 " Show vimdiff for merge. (experimental)
-function! git#vimdiff_merge() abort"{{{
+function! git#vimdiff_merge() abort  "{{{
   let l:file = s:expand('%')
   let l:filetype = &filetype
   let t:git_vimdiff_original_bufnr = bufnr('%')
@@ -343,9 +343,9 @@ function! git#vimdiff_merge() abort"{{{
   0d
   diffthis
   let &filetype = l:filetype
-endfunction"}}}
+endfunction  "}}}
 
-function! git#vimdiff_merge_done() abort"{{{
+function! git#vimdiff_merge_done() abort  "{{{
   if exists('t:git_vimdiff_original_bufnr') && exists('t:git_vimdiff_buffers')
     if getbufline(t:git_vimdiff_buffers[0], 1, '$') == getbufline(t:git_vimdiff_buffers[1], 1, '$')
       execute 'sbuffer ' . t:git_vimdiff_original_bufnr
@@ -361,9 +361,9 @@ function! git#vimdiff_merge_done() abort"{{{
       echohl None
     endif
   endif
-endfunction"}}}
+endfunction  "}}}
 
-function! s:open_git_buffer(content) abort"{{{
+function! s:open_git_buffer(content) abort  "{{{
   if exists('b:is_git_msg_buffer') && b:is_git_msg_buffer
     enew!
   else
@@ -378,8 +378,8 @@ function! s:open_git_buffer(content) abort"{{{
   setlocal nomodifiable
 
   let b:is_git_msg_buffer = 1
-endfunction"}}}
-function! s:edit_git_buffer(file) abort"{{{
+endfunction  "}}}
+function! s:edit_git_buffer(file) abort  "{{{
   execute g:git_command_edit '`=a:file`'
 
   % delete _
@@ -389,15 +389,15 @@ function! s:edit_git_buffer(file) abort"{{{
   setlocal nomodified
 
   let b:is_git_msg_buffer = 1
-endfunction"}}}
+endfunction  "}}}
 
-function! s:expand(expr) abort"{{{
+function! s:expand(expr) abort  "{{{
   if has('win32') || has('win64')
     " Substitute path.
     return substitute(expand(a:expr), '\\', '/', 'g')
   else
     return expand(a:expr)
   endif
-endfunction"}}}
+endfunction  "}}}
 
 " vim: foldmethod=marker
