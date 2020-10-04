@@ -143,26 +143,32 @@ function! git#status() abort  "{{{
   call s:open_git_buffer(l:git_output)
   setlocal filetype=git-status
   nnoremap <silent><buffer> <Enter> :<C-u>call <SID>add_cursor_file()<Enter>
-  nnoremap <silent><buffer> -       :<C-u>call <SID>remove_cursor_file()<Enter>
+  nnoremap <silent><buffer> -       :<C-u>call <SID>reset_cursor_file()<Enter>
+  nnoremap <silent><buffer> x       :<C-u>call <SID>discard_cursor_file()<Enter>
+  nnoremap <silent><buffer> !       :<C-u>call <SID>clean_cursor_file()<Enter>
 endfunction  "}}}
 
 function! s:add_cursor_file() abort  "{{{
   let l:addfile = split(getline('.'))
-  if len(l:addfile) > 1
-    call git#add(get(l:addfile, -1))
-  else
-    call git#add(get(l:addfile, 0))
-  endif
+  call git#add(get(l:addfile, -1))
   call s:refresh_git_status()
 endfunction  "}}}
 
-function! s:remove_cursor_file() abort  "{{{
+function! s:reset_cursor_file() abort  "{{{
   let l:resetfile = split(getline('.'))
-  if len(l:resetfile) > 2
-    call s:system('reset HEAD -- ' . get(l:resetfile, -1))
-  else
-    call s:system('reset HEAD -- ' . get(l:resetfile, 1))
-  endif
+  call s:system('reset HEAD -- ' . get(l:resetfile, -1))
+  call s:refresh_git_status()
+endfunction  "}}}
+
+function! s:discard_cursor_file() abort  "{{{
+  let l:discardfile = split(getline('.'))
+  call s:system('checkout -- ' . get(l:discardfile, -1))
+  call s:refresh_git_status()
+endfunction  "}}}
+
+function! s:clean_cursor_file() abort  "{{{
+  let l:cleanfile = split(getline('.'))
+  call s:system('clean -fd -- ' . get(l:cleanfile, -1))
   call s:refresh_git_status()
 endfunction  "}}}
 
