@@ -186,6 +186,13 @@ function! git#add(expr) abort"{{{
   call git#do_command('add ' . l:file)
 endfunction"}}}
 
+" Unstage file.
+function! git#reset(expr) abort"{{{
+  let l:file = s:expand(a:expr !=# '' ? a:expr : '%')
+
+  call git#do_command('reset HEAD -- ' . l:file)
+endfunction"}}}
+
 " Remove file from repository.
 function! git#rm(expr) abort"{{{
   let l:file = s:expand(a:expr !=# '' ? a:expr : '%')

@@ -111,6 +111,7 @@ if !exists('g:git_no_default_mappings') || !g:git_no_default_mappings
   nnoremap <silent><Leader>gl :<C-u>GitLog<CR>
   nnoremap <silent><Leader>ga :<C-u>GitAdd<CR>
   nnoremap <silent><Leader>gA :<C-u>GitAdd<Space><cfile><CR>
+  nnoremap <silent><Leader>gr :<C-u>GitReset<CR>
   nnoremap <silent><Leader>gc :<C-u>GitCommit<CR>
   nnoremap <silent><Leader>gp :<C-u>GitPullRebase<CR>
   nnoremap <silent><Leader>gf :<C-u>GitFixup<Space>
@@ -122,6 +123,7 @@ command! -nargs=* -complete=customlist,git#list_commits   GitDiff     call git#d
 command! -nargs=* -complete=customlist,git#list_commits   GitVimDiff  call git#vimdiff(<q-args>)
 command!          GitStatus           call git#status()
 command! -nargs=? -complete=file                        GitAdd      call git#add(<q-args>)
+command! -nargs=? -complete=file                        GitReset    call git#reset(<q-args>)
 command! -nargs=* GitLog              call git#log(<q-args>)
 command! -nargs=* GitCommit           call git#commit(<q-args>)
 command! -nargs=1 GitCatFile          call git#cat_file(<q-args>)
