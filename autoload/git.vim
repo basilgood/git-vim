@@ -222,14 +222,8 @@ endfunction  "}}}
 " Commit.
 function! git#commit(args) abort  "{{{
   let l:git_dir = s:get_git_dir()
-  let l:args = a:args
-  let l:command = '!git commit -v'
-  execute l:command
-endfunction  "}}}
-
-function! s:write_commit_message() abort  "{{{
-  call git#do_command('commit ' . b:git_commit_args . ' -F ' . expand('%'))
-  autocmd! GitCommit * <buffer>
+  noautocmd execute '!git commit ' . a:args
+  call s:refresh_git_status()
 endfunction  "}}}
 
 " Checkout.
