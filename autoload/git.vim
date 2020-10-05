@@ -152,33 +152,33 @@ function! git#status() abort  "{{{
   execute 'nnoremap <silent><buffer> q    :bd!<cr>'
 endfunction  "}}}
 
+function! s:cursor_file() abort  "{{{
+  let l:lineitems = split(getline('.'))
+  let l:fileinline = get(l:lineitems, -1)
+  return expand(l:fileinline)
+endfunction  "}}}
+
 function! s:open_cursor_file() abort  "{{{
-  let l:cursorfile = split(getline('.'))
-  let l:openfile = get(l:cursorfile, -1)
-  execute 'edit ' . expand(l:openfile)
+  execute 'edit ' . s:cursor_file()
 endfunction  "}}}
 
 function! s:add_cursor_file() abort  "{{{
-  let l:addfile = split(getline('.'))
-  call git#add(get(l:addfile, -1))
+  call git#add(s:cursor_file())
   call s:refresh_git_status()
 endfunction  "}}}
 
 function! s:reset_cursor_file() abort  "{{{
-  let l:resetfile = split(getline('.'))
-  call s:system('reset HEAD -- ' . get(l:resetfile, -1))
+  call s:system('reset HEAD -- ' . s:cursor_file())
   call s:refresh_git_status()
 endfunction  "}}}
 
 function! s:discard_cursor_file() abort  "{{{
-  let l:discardfile = split(getline('.'))
-  call s:system('checkout -- ' . get(l:discardfile, -1))
+  call s:system('checkout -- ' . s:cursor_file())
   call s:refresh_git_status()
 endfunction  "}}}
 
 function! s:clean_cursor_file() abort  "{{{
-  let l:cleanfile = split(getline('.'))
-  call s:system('clean -fd -- ' . get(l:cleanfile, -1))
+  call s:system('clean -fd -- ' . s:cursor_file())
   call s:refresh_git_status()
 endfunction  "}}}
 
@@ -222,20 +222,9 @@ endfunction  "}}}
 " Commit.
 function! git#commit(args) abort  "{{{
   let l:git_dir = s:get_git_dir()
-
   let l:args = a:args
-
-  " Create COMMIT_EDITMSG file
-  call s:edit_git_buffer(l:git_dir.'/COMMIT_EDITMSG')
-
-  setlocal filetype=gitcommit bufhidden=wipe
-  let b:git_commit_args = l:args
-
-  augroup GitCommit
-    autocmd!
-    autocmd BufWritePre  <buffer> silent g/^\s*#/d | setlocal fileencoding=utf-8
-    autocmd BufWinLeave <buffer> call s:write_commit_message() | bdelete!
-  augroup END
+  let l:command = '!git commit -v'
+  execute l:command
 endfunction  "}}}
 
 function! s:write_commit_message() abort  "{{{
@@ -413,5 +402,3 @@ function! s:expand(expr) abort  "{{{
     return expand(a:expr)
   endif
 endfunction  "}}}
-
-" vim: foldmethod=marker
