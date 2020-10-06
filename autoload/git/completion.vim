@@ -34,7 +34,7 @@ endfunction  "}}}
 
 " List all git commands.
 function! git#completion#git(args) abort  "{{{
-  return ['add', 'bisect', 'branch', 'checkout', 'clone', 'commit', 'diff', 'fetch',
+  return ['add', 'bisect', 'branch', 'checkout', 'cherry-pick', 'clone', 'commit', 'diff', 'fetch',
         \'grep', 'init', 'log', 'merge', 'mv', 'pull', 'push', 'rebase', 'reset', 'rm',
         \'show', 'status', 'tag', 'clean'] + s:hub_commands()
 endfunction  "}}}
@@ -90,6 +90,9 @@ endfunction  "}}}
 function! git#completion#rebase(args) abort  "{{{
   return [1, ['-i', '--continue', '--abort', '--skip']]
 endfunction  "}}}
+function! git#completion#cherry_pick(args) abort  "{{{
+  return [1, ['-e', '-x', '-r', '-m', '-n', '-s', '-quit', '--continue', '--abort', '--skip', '--edit']]
+endfunction  "}}}
 function! git#completion#revert(args) abort  "{{{
   return [1, []]
 endfunction  "}}}
@@ -117,12 +120,7 @@ endfunction  "}}}
 function! git#completion#pull_request(args) abort  "{{{
   return [0, ['-m', '-b', '--base', '-h', '--head', '-i', '--issue']]
 endfunction  "}}}
-function! git#completion#clean(args) abort  "{{{
-  return ['-f', '-d']
-endfunction  "}}}
 
 function! s:get_files() abort  "{{{
   return split(glob('*'), '\n')
 endfunction  "}}}
-
-" vim: foldmethod=marker
